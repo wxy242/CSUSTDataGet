@@ -3,7 +3,6 @@ package com.example.changli_planet_app.feature.mooc.cookie
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.gradle.scan.agent.serialization.scan.serializer.kryo.it
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

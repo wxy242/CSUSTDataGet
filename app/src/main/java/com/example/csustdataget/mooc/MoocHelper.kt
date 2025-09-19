@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.example.changli_planet_app.feature.mooc.data.remote.dto.PendingAssignmentCourse
 import com.example.changli_planet_app.feature.mooc.data.remote.repository.MoocRepository
-import com.example.csustdataget.Resource
+import com.example.csustdataget.core.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,11 +16,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class MoocHelper {
-    companion object {
-        private const val TAG = "MoocViewModel"
-    }
-
+object MoocHelper {
+    private const val TAG = "MoocHelper"
     private val _isSuccessLogin = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
     val isSuccessLogin = _isSuccessLogin.asStateFlow()
 
@@ -55,6 +52,7 @@ class MoocHelper {
                     val courseResult = repository.getCourseNamesWithPendingHomeworks()
                         .filter { it !is Resource.Loading }
                         .first()
+                    Log.d(TAG,courseResult.toString())
                     _pendingCourse.value = courseResult
                 } else {
                     _pendingCourse.value = Resource.Error((loginResult as Resource.Error).msg)

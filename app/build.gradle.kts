@@ -46,7 +46,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     // jsoup
     implementation("org.jsoup:jsoup:1.21.2")
-
+    //MMKV
+    // Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.tencent:mmkv:1.2.13")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

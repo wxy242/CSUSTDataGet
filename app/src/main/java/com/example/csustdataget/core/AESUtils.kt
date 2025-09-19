@@ -1,4 +1,4 @@
-package com.example.csustdataget
+package com.example.csustdataget.core
 
 import android.util.Base64
 import javax.crypto.Cipher
