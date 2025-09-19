@@ -10,11 +10,12 @@ import java.util.concurrent.TimeUnit
 object RetrofitUtils {
     private const val FreshNewsIp = "http://113.44.47.220:8085/app/"
     private const val UserIp = "http://113.44.47.220:8083/app/users/"
-    private const val IpLocation ="http://ip-api.com/json/"
-    private const val MOOC_LOCATION = "http://pt.csust.edu.cn"
-    private const val SSO_AUTH_URL = "https://authserver.csust.edu.cn"
-    private const val SSO_EHALL_URL = "https://ehall.csust.edu.cn"
-    private const val EMPTY_CLASS_URL =""
+    private const val IpLocation = "http://ip-api.com/json/"
+    private const val MOOC_LOCATION = "http://pt.csust.edu.cn/"
+    private const val CampusCard_Location = "http://yktwd.csust.edu.cn:8988/"
+    private const val SSO_AUTH_URL = "https://authserver.csust.edu.cn/"
+    private const val SSO_EHALL_URL = "https://ehall.csust.edu.cn/"
+    private const val EMPTY_CLASS_URL = ""
 
     //添加公共请求头 - 用于需要认证的 API
 
@@ -24,11 +25,19 @@ object RetrofitUtils {
             .connectTimeout(30, TimeUnit.SECONDS)  // MOOC 系统可能较慢，增加超时时间
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor (NetworkLogger.getLoggingInterceptor())
+            .addInterceptor(NetworkLogger.getLoggingInterceptor())
             .cookieJar(PersistentCookieJar())
             .build()
     }
-    private val EmptyClassClient : OkHttpClient by lazy {
+    private val campusClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .addInterceptor(NetworkLogger.getLoggingInterceptor())
+            .build()
+    }
+    private val EmptyClassClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
@@ -36,7 +45,7 @@ object RetrofitUtils {
             .build()
     }
 
-    val instanceEmptyClass : Retrofit by lazy {
+    val instanceEmptyClass: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EMPTY_CLASS_URL)
             .client(EmptyClassClient)
@@ -72,4 +81,13 @@ object RetrofitUtils {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+    val instanceQueryElec: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(CampusCard_Location)
+            .client(campusClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
 }

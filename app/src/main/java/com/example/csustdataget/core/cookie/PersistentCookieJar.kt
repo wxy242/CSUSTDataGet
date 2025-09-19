@@ -45,7 +45,7 @@ class PersistentCookieJar : CookieJar {
             Log.d(TAG, "saveFromResponse: Reading from MMKV for host: $host, json: $json")
             if (json != null) {
                 val serializableCookies: List<SerializableCookie> = gson
-                    .fromJson(json, object : TypeToken<List<SerializableCookie>>() {}.type)
+                    .fromJson(json, object : com.google.gson.reflect.TypeToken<List<SerializableCookie>>() {}.type)
                 val cookies = serializableCookies.map { it.toOkHttpCookie() }.toMutableList()
                 Log.d(
                     TAG,
@@ -79,7 +79,7 @@ class PersistentCookieJar : CookieJar {
             val json = mmkv.decodeString(host)
             Log.d(TAG, "loadForRequest: Reading from MMKV for host: $host, json: $json")
             if (json != null) {
-                val type = object : TypeToken<List<SerializableCookie>>() {}.type
+                val type = object : com.google.gson.reflect.TypeToken<List<SerializableCookie>>() {}.type
                 val serializableCookies: List<SerializableCookie> = gson.fromJson(json, type)
                 val cookies = serializableCookies.map { it.toOkHttpCookie() }.toMutableList()
                 Log.d(
