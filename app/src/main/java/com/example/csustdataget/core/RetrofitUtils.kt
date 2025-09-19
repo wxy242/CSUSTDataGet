@@ -1,5 +1,4 @@
-package com.example.csustdataget
-
+package com.example.csustdataget.core
 
 import com.example.changli_planet_app.feature.mooc.cookie.PersistentCookieJar
 import okhttp3.OkHttpClient
@@ -7,7 +6,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
-
 
 object RetrofitUtils {
     private const val FreshNewsIp = "http://113.44.47.220:8085/app/"
@@ -26,6 +24,7 @@ object RetrofitUtils {
             .connectTimeout(30, TimeUnit.SECONDS)  // MOOC 系统可能较慢，增加超时时间
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor (NetworkLogger.getLoggingInterceptor())
             .cookieJar(PersistentCookieJar())
             .build()
     }

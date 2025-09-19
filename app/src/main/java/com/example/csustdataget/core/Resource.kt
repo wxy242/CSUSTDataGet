@@ -1,5 +1,4 @@
-package com.example.csustdataget
-
+package com.example.csustdataget.core
 
 sealed class Resource<T> {
     data class Success<T> (val data: T) : Resource<T>()

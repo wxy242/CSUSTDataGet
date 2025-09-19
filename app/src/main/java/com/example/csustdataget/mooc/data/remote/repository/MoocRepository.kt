@@ -10,9 +10,9 @@ import com.example.changli_planet_app.feature.mooc.data.remote.dto.MoocHomework
 import com.example.changli_planet_app.feature.mooc.data.remote.dto.MoocProfile
 import com.example.changli_planet_app.feature.mooc.data.remote.dto.MoocTest
 import com.example.changli_planet_app.feature.mooc.data.remote.dto.PendingAssignmentCourse
-import com.example.csustdataget.AESUtils
-import com.example.csustdataget.Resource
-import com.example.csustdataget.RetrofitUtils
+import com.example.csustdataget.core.AESUtils
+import com.example.csustdataget.core.Resource
+import com.example.csustdataget.core.RetrofitUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
