@@ -49,6 +49,7 @@ dependencies {
     //MMKV
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
+    //mmkv
     implementation("com.tencent:mmkv:1.2.13")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

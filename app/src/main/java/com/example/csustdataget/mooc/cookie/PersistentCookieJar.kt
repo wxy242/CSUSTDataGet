@@ -22,7 +22,7 @@ import kotlin.collections.map
 
 
 class PersistentCookieJar : CookieJar {
-    private val mmkv by lazy { MMKV.defaultMMKV() }
+    private val mmkv by lazy { MMKV.mmkvWithID(TAG)}
     private val gson = Gson()
 
     //内存缓存

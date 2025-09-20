@@ -1,6 +1,7 @@
 package com.example.csustdataget.core
 
 import com.example.changli_planet_app.feature.mooc.cookie.PersistentCookieJar
+import com.example.csustdataget.EmptyClass.EmptyClassCookiejar
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,7 +15,7 @@ object RetrofitUtils {
     private const val MOOC_LOCATION = "http://pt.csust.edu.cn"
     private const val SSO_AUTH_URL = "https://authserver.csust.edu.cn"
     private const val SSO_EHALL_URL = "https://ehall.csust.edu.cn"
-    private const val EMPTY_CLASS_URL =""
+    private const val EMPTY_CLASS_URL ="http://xk.csust.edu.cn/"
 
     //添加公共请求头 - 用于需要认证的 API
 
@@ -30,9 +31,10 @@ object RetrofitUtils {
     }
     private val EmptyClassClient : OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .cookieJar(PersistentCookieJar())
             .build()
     }
 
@@ -41,7 +43,6 @@ object RetrofitUtils {
             .baseUrl(EMPTY_CLASS_URL)
             .client(EmptyClassClient)
             .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
             .build()
 
     }
