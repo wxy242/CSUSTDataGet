@@ -1,0 +1,73 @@
+package com.dcelysia.csust_spider.core
+
+
+import com.dcelysia.csust_spider.mooc.cookie.PersistentCookieJar
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
+
+object RetrofitUtils {
+    private const val MOOC_LOCATION = "http://pt.csust.edu.cn"
+    private const val SSO_AUTH_URL = "https://authserver.csust.edu.cn"
+    private const val SSO_EHALL_URL = "https://ehall.csust.edu.cn"
+    private const val EMPTY_CLASS_URL ="http://xk.csust.edu.cn/"
+
+    //添加公共请求头 - 用于需要认证的 API
+
+    // MOOC 和 SSO 专用客户端 - 不包含 AuthInterceptor，添加 Cookie 支持
+    private val moocClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)  // MOOC 系统可能较慢，增加超时时间
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor (NetworkLogger.getLoggingInterceptor())
+            .cookieJar(PersistentCookieJar())
+            .build()
+    }
+    private val EmptyClassClient : OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .cookieJar(PersistentCookieJar())
+            .build()
+    }
+
+    val instanceEmptyClass : Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EMPTY_CLASS_URL)
+            .client(EmptyClassClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+
+    }
+
+    val instanceMooc: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(MOOC_LOCATION)
+            .client(moocClient)
+            .addConverterFactory(ScalarsConverterFactory.create())  // 支持 String 响应
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    val instanceSSOAuth: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(SSO_AUTH_URL)
+            .client(moocClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    val instanceSSOEhall: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(SSO_EHALL_URL)
+            .client(moocClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+}

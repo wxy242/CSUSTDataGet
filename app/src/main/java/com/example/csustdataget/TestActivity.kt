@@ -5,7 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.csustdataget.mooc.MoocHelper
+import com.dcelysia.csust_spider.mooc.data.remote.error.MoocHelperError
 import com.tencent.mmkv.MMKV
 
 class TestActivity : AppCompatActivity() {
@@ -18,6 +18,5 @@ class TestActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        MoocHelper.loginAndFetchCourses("202408130230","061112")
     }
 }
