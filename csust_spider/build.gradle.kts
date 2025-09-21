@@ -1,20 +1,14 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.example.csustdataget"
+    namespace = "com.dcelysia.csust_spider"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.csustdataget"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -46,17 +40,11 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     // jsoup
     implementation("org.jsoup:jsoup:1.21.2")
+    //MMKV
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
-    //MMKV
     implementation("com.tencent:mmkv:1.2.13")
-    implementation(project(":csust_spider"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
