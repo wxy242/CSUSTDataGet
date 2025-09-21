@@ -2,7 +2,7 @@ package com.example.csustdataget.EmptyClass
 
 import android.accounts.Account
 import android.util.Log
-import com.example.csustdataget.core.RetrofitUtils
+import com.dcelysia.csust_spider.core.RetrofitUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
