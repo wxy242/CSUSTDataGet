@@ -63,8 +63,10 @@ object EduCourseService {
     suspend fun getGradeDetail(url: String): GradeDetail {
 
         AuthService.CheckLoginStates()
+        // 学校返回数据有误 手动修改
+        val fixedUrl = url.replace(",com",".cn")
 
-        val response = courseApi.getGradeDetail(url)
+        val response = courseApi.getGradeDetail(fixedUrl)
 
         if (!response.isSuccessful) {
             throw EduHelperError.GradeDetailRetrievalFailed("网络请求失败：${response.code()}")

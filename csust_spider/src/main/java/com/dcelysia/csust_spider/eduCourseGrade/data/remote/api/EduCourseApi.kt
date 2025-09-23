@@ -5,6 +5,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Url
 
 interface EduCourseApi {
 
@@ -20,7 +21,9 @@ interface EduCourseApi {
         @Field("xsfs") displayMode: String,
         @Field("fxkc") studyMode: String
     ): Response<String>
+    @GET
+    suspend fun getGradeDetail(
+        @Url url: String
+    ): Response<String>
 
-    @GET("jsxsd/kscj/cjcx_detail")
-    suspend fun getGradeDetail(@Field("url") url: String): Response<String>
 }
