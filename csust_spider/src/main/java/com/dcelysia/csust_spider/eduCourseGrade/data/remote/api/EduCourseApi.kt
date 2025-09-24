@@ -9,7 +9,7 @@ import retrofit2.http.Url
 
 interface EduCourseApi {
 
-    @GET("/jsxsd/kscj/cjcx_list")
+    @GET("/jsxsd/kscj/cjcx_query")
     suspend fun getCourseGradePage(): Response<String>
 
     @FormUrlEncoded
