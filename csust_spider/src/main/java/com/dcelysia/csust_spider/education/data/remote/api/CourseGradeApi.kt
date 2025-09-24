@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Url
 
-interface EduCourseApi {
+interface CourseGradeApi {
 
     @GET("/jsxsd/kscj/cjcx_query")
     suspend fun getCourseGradePage(): Response<String>
