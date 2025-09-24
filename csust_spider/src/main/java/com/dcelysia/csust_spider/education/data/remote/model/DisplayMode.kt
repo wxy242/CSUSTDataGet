@@ -1,4 +1,4 @@
-package com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto
+package com.dcelysia.csust_spider.education.data.remote.model
 
 enum class DisplayMode(val id: String) {
     BEST_GRADE("0"), // 显示最好成绩

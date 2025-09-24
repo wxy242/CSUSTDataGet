@@ -1,12 +1,10 @@
-package com.dcelysia.csust_spider.education.data.remote
-
+package com.dcelysia.csust_spider.education.data.remote.service
 
 import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.EduEhallApi
 import com.dcelysia.csust_spider.education.data.remote.api.EduLoginApi
 import com.dcelysia.csust_spider.education.data.remote.error.EduHelperError
 import retrofit2.Response
-
 
 object AuthService {
 

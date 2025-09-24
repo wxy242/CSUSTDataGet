@@ -1,4 +1,4 @@
-package com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto
+package com.dcelysia.csust_spider.education.data.remote.model
 
 data class GradeComponent(
     val type: String, //成绩类型

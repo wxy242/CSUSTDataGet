@@ -1,15 +1,14 @@
-package com.dcelysia.csust_spider.eduCourseGrade.data
+package com.dcelysia.csust_spider.education.data.remote.service
 
 import com.dcelysia.csust_spider.core.RetrofitUtils
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.api.EduCourseApi
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto.CourseGrade
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto.CourseNature
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto.DisplayMode
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto.GradeComponent
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto.GradeDetail
-import com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto.StudyMode
-import com.dcelysia.csust_spider.education.data.remote.AuthService
+import com.dcelysia.csust_spider.education.data.remote.api.EduCourseApi
 import com.dcelysia.csust_spider.education.data.remote.error.EduHelperError
+import com.dcelysia.csust_spider.education.data.remote.model.CourseGrade
+import com.dcelysia.csust_spider.education.data.remote.model.CourseNature
+import com.dcelysia.csust_spider.education.data.remote.model.DisplayMode
+import com.dcelysia.csust_spider.education.data.remote.model.GradeComponent
+import com.dcelysia.csust_spider.education.data.remote.model.GradeDetail
+import com.dcelysia.csust_spider.education.data.remote.model.StudyMode
 import org.jsoup.Jsoup
 
 object EduCourseService {
@@ -126,7 +125,7 @@ object EduCourseService {
                 val courseAttribute = cols[14].text().trim()
 
                 val courseNatureString = cols[15].text().trim()
-                val courseNature = CourseNature.fromChineseName(courseNatureString)
+                val courseNature = CourseNature.Companion.fromChineseName(courseNatureString)
 
                 val courseCategory = cols[16].text().trim()
 

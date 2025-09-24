@@ -1,4 +1,4 @@
-package com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto
+package com.dcelysia.csust_spider.education.data.remote.model
 
 enum class CourseNature(val id: String, val chineseName: String) {
 

@@ -1,4 +1,6 @@
-package com.dcelysia.csust_spider.eduCourseGrade.data.remote.dto
+package com.dcelysia.csust_spider.education.data.remote.model
+
+import com.dcelysia.csust_spider.education.data.remote.model.CourseNature
 
 data class CourseGrade(
     val semester: String, //开课学期
