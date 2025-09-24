@@ -40,6 +40,7 @@ object RetrofitUtils {
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor (NetworkLogger.getLoggingInterceptor() )
             .cookieJar(eduCookieJar)
             .build()
     }
@@ -71,6 +72,14 @@ object RetrofitUtils {
     }
 
     val instanceEduLogin: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EDUCA_LOGIN_URL)
+            .client(EducationClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    val instanceEduCourse: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
             .client(EducationClient)
