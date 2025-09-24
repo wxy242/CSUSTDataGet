@@ -1,4 +1,4 @@
-package com.dcelysia.csust_spider.education.data.remote.service
+package com.dcelysia.csust_spider.education.data.remote.services
 
 import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.EduCourseApi
