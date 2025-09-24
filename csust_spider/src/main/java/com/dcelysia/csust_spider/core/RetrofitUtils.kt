@@ -44,14 +44,6 @@ object RetrofitUtils {
             .cookieJar(eduCookieJar)
             .build()
     }
-    val campusClient : OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .cookieJar(campusCookieJar)
-            .build()
-    }
 
     val instanceScoreInquiry : Retrofit by lazy {
         Retrofit.Builder()
@@ -97,6 +89,14 @@ object RetrofitUtils {
             .build()
     }
 
+    val instanceExam :Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EDUCA_LOGIN_URL)
+            .client(EducationClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
     val instanceSSOAuth: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(SSO_AUTH_URL)
