@@ -21,7 +21,7 @@ interface EduLoginApi {
         @Field("encoded")encoded: String
     ): Response<String>
 
-    @GET("/jsxsd/xk/LoginToXk?method=exit")
+    @GET("/jsxsd/xk/LoginToXk?method=exit ")
     suspend fun loginout(
         @Query("tktime") timestamp: Long
     ): Response<String>
