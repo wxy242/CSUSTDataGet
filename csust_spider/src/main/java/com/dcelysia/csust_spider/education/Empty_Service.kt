@@ -1,8 +1,8 @@
-package com.example.csustdataget.EmptyClass
+package com.dcelysia.csust_spider.education
 
-import android.accounts.Account
 import android.util.Log
-import com.example.csustdataget.core.RetrofitUtils
+import com.dcelysia.csust_spider.core.RetrofitUtils
+import com.dcelysia.csust_spider.education.data.remote.api.EmptyApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

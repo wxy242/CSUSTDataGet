@@ -1,4 +1,4 @@
-package com.example.csustdataget.EmptyClass
+package com.dcelysia.csust_spider.education.data.remote.model
 
 data class EmptyClass(
      val stuNum: String? = null,

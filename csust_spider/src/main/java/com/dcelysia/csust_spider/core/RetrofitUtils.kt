@@ -67,6 +67,14 @@ object RetrofitUtils {
             .build()
     }
 
+    val instanceExam :Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EDUCA_LOGIN_URL)
+            .client(EducationClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
     val instanceSSOAuth: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(SSO_AUTH_URL)
