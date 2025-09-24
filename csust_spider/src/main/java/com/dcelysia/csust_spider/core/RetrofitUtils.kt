@@ -1,8 +1,6 @@
 package com.dcelysia.csust_spider.core
 
 
-import android.util.Log.i
-import com.dcelysia.csust_spider.core.RetrofitUtils.eduCookieJar
 import com.dcelysia.csust_spider.mooc.cookie.PersistentCookieJar
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -38,15 +36,6 @@ object RetrofitUtils {
             .writeTimeout(30, TimeUnit.SECONDS)
             .cookieJar(eduCookieJar)
             .build()
-    }
-
-    val instanceEmptyClass : Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(EDUCA_LOGIN_URL)
-            .client(EducationClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
     }
 
     val instanceEduLogin: Retrofit by lazy {

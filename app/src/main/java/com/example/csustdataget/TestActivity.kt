@@ -25,10 +25,5 @@ class TestActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        CoroutineScope(Dispatchers.IO).launch {
-            AuthService.Login("202409020115","Qingyue.1026")
-            val result =ExamArrangeService.getExamArrange("","期末")
-            Log.d("Qingyue","${result?.get(1)?.examRoomval}")
-        }
     }
 }
