@@ -1,6 +1,9 @@
 package com.dcelysia.csust_spider.core
 
 
+import android.util.Log.i
+import com.dcelysia.csust_spider.core.RetrofitUtils.EducationClient
+import com.dcelysia.csust_spider.core.RetrofitUtils.eduCookieJar
 import com.dcelysia.csust_spider.mooc.cookie.PersistentCookieJar
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -14,9 +17,12 @@ object RetrofitUtils {
     private const val SSO_AUTH_URL = "https://authserver.csust.edu.cn"
     private const val SSO_EHALL_URL = "https://ehall.csust.edu.cn"
     private const val EDUCA_LOGIN_URL ="http://xk.csust.edu.cn"
+
+    private const val CAMPUS_CARD_LOCATION = "http://yktwd.csust.edu.cn:8988/"
     private val moocCookieJar by lazy { PersistentCookieJar() }
     private val eduCookieJar by lazy { PersistentCookieJar() }
 
+    private val campusCookieJar by lazy { PersistentCookieJar() }
     //添加公共请求头 - 用于需要认证的 API
 
     // MOOC 和 SSO 专用客户端 - 不包含 AuthInterceptor，添加 Cookie 支持
@@ -34,11 +40,29 @@ object RetrofitUtils {
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor (NetworkLogger.getLoggingInterceptor() )
             .cookieJar(eduCookieJar)
             .build()
     }
 
+    val instanceEmptyClass : Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EDUCA_LOGIN_URL)
+            .client(EducationClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+
+    }
+
     val instanceEduLogin: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EDUCA_LOGIN_URL)
+            .client(EducationClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    val instanceEduCourse: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
             .client(EducationClient)
@@ -77,6 +101,14 @@ object RetrofitUtils {
         Retrofit.Builder()
             .baseUrl(SSO_EHALL_URL)
             .client(moocClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    val instanceCampus : Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(CAMPUS_CARD_LOCATION)
+            .client(campusClient)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
