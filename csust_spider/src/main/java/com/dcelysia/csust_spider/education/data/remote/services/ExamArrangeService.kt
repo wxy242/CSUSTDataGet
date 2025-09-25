@@ -1,5 +1,4 @@
-package com.dcelysia.csust_spider.education
-
+package com.dcelysia.csust_spider.education.data.remote.services
 
 import android.os.Build
 import android.util.Log
