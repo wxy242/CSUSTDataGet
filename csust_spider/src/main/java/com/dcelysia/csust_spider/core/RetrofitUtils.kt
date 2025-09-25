@@ -1,9 +1,6 @@
 package com.dcelysia.csust_spider.core
 
 
-import android.util.Log.i
-import com.dcelysia.csust_spider.core.RetrofitUtils.EducationClient
-import com.dcelysia.csust_spider.core.RetrofitUtils.eduCookieJar
 import com.dcelysia.csust_spider.mooc.cookie.PersistentCookieJar
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -42,6 +39,14 @@ object RetrofitUtils {
             .writeTimeout(30, TimeUnit.SECONDS)
             .addInterceptor (NetworkLogger.getLoggingInterceptor() )
             .cookieJar(eduCookieJar)
+            .build()
+    }
+    val campusClient : OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .cookieJar(campusCookieJar)
             .build()
     }
 

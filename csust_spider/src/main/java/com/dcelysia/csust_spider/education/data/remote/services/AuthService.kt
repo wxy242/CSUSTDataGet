@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:csust_spider/src/main/java/com/dcelysia/csust_spider/education/AuthService.kt
-package com.dcelysia.csust_spider.education
-========
 package com.dcelysia.csust_spider.education.data.remote.services
->>>>>>>> main:csust_spider/src/main/java/com/dcelysia/csust_spider/education/data/remote/services/AuthService.kt
 
 import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.EduEhallApi
