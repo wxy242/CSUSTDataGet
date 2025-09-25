@@ -50,6 +50,15 @@ object RetrofitUtils {
             .build()
     }
 
+    val instanceScoreInquiry : Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(EDUCA_LOGIN_URL)
+            .client(EducationClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
     val instanceEmptyClass : Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
