@@ -11,6 +11,8 @@ import com.dcelysia.csust_spider.education.data.remote.model.DisplayMode
 import com.dcelysia.csust_spider.education.data.remote.model.GradeDetail
 import com.dcelysia.csust_spider.education.data.remote.model.StudyMode
 import com.dcelysia.csust_spider.education.data.remote.repository.EducationRepository
+import retrofit2.HttpException
+import java.io.IOException
 
 object EducationHelper {
     private val TAG = "EducationHelper"
@@ -88,8 +90,14 @@ object EducationHelper {
     suspend fun getGradeDetail(url: String): GradeDetail? {
         return try {
             repository.getGradeDetail(url)
-        } catch (e: Exception) {
-            Log.d(TAG,e.toString())
+        } catch (e: IOException) { // 网络问题
+            Log.e(TAG, "网络错误: ${e.message}", e)
+            null
+        } catch (e: HttpException) { // HTTP 4xx/5xx
+            Log.e(TAG, "服务器返回错误码: ${e.code()}", e)
+            null
+        } catch (e: Exception) { // 其他未知错误
+            Log.e(TAG, "未知错误", e)
             null
         }
     }
