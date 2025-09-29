@@ -22,5 +22,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "CSUSTDataGet"
-include(":app")
 include(":csust_spider")
+include(":spider_app")

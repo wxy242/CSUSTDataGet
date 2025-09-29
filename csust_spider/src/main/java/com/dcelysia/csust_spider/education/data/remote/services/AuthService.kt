@@ -26,10 +26,10 @@ object AuthService {
     suspend fun Login(account: String,password: String): Boolean{
         Log.d(TAG,"开始进入Login方法")
         val encode = getEhall(account,password)
+        Log.d(TAG,"encode:${encode}}")
         Log.d(TAG,"getEhall方法完成")
         val reponse= Loginapi.Login(account,password,encode)
-
-
+        Log.d(TAG,reponse.body().toString())
         if (isLogin(reponse)){
             Log.d(TAG,"登录失败，账号密码错误")
             throw EduHelperError.LoginFailed("用户名或密码错误！")

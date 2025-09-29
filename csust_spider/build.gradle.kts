@@ -42,6 +42,7 @@ dependencies {
     // jsoup
     implementation("org.jsoup:jsoup:1.21.2")
     //MMKV
+    implementation("com.tencent:mmkv:1.2.13")
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.tencent:mmkv:1.2.13")
