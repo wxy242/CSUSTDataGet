@@ -1,5 +1,6 @@
 package com.dcelysia.csust_spider.education.data.remote.services
 
+import android.util.Log
 import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.EduEhallApi
 import com.dcelysia.csust_spider.education.data.remote.api.EduLoginApi
@@ -11,7 +12,7 @@ object AuthService {
     private val Loginapi by lazy { RetrofitUtils.instanceEduLogin.create(EduLoginApi::class.java) }
 
     private val Ehallapi by lazy { RetrofitUtils.instanceEduLogin.create(EduEhallApi::class.java) }
-
+    private val TAG = "AuthService"
 
     suspend fun CheckLoginStates(): Boolean{
         val reponse =Loginapi.checkLoginStates()
@@ -23,13 +24,17 @@ object AuthService {
     }
 
     suspend fun Login(account: String,password: String): Boolean{
+        Log.d(TAG,"开始进入Login方法")
         val encode = getEhall(account,password)
+        Log.d(TAG,"getEhall方法完成")
         val reponse= Loginapi.Login(account,password,encode)
 
 
         if (isLogin(reponse)){
+            Log.d(TAG,"登录失败，账号密码错误")
             throw EduHelperError.LoginFailed("用户名或密码错误！")
         }else{
+            Log.d(TAG,"登录成功")
             return true
         }
     }
