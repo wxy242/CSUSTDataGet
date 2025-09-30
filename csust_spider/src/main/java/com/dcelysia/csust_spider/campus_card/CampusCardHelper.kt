@@ -1,5 +1,6 @@
 package com.example.csustdataget.CampusCard
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.L
 import android.util.Log
 import com.example.csustdataget.CampusCard.model.QueryEleRequest
 import com.example.csustdataget.CampusCard.repository.CampusCardRepository
@@ -7,6 +8,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object CampusCardHelper {
     private val json by lazy { Gson() }
@@ -96,24 +98,34 @@ object CampusCardHelper {
     ): Double? {
         val campusId = buildingMap[campusName]
         val buildingId = buildingMap[buildingName]
-        val requestObj = mapOf(
-            "query_elec_roominfo" to QueryEleRequest(
-                aid = campusId,
-                room = QueryEleRequest.Room(roomid = roomId, room = roomId),
-                floor = QueryEleRequest.Floor(floorid = "", floor = ""),
-                area = QueryEleRequest.Area(
-                    area = campusName,
-                    areaname = campusName
-                ),
-                building = QueryEleRequest.Building(
-                    buildingid = buildingId,
-                    building = ""
-                ),
-            )
-        )
-        val jsonDataString = json.toJson(requestObj)
-        val response = repository.getElectricity(jsonDataString)
-        return extractElectricityFromString(response)
+        if (campusId.isNullOrBlank() || buildingId.isNullOrBlank()) {
+            Log.e(TAG, "queryElectricity: invalid campus or building -> $campusName / $buildingName")
+            return null
+        }
+        return try {
+            // 切到 IO 线程执行网络请求（repository.getElectricity 应为 suspend）
+            withContext(Dispatchers.IO) {
+                val requestObj = mapOf(
+                    "query_elec_roominfo" to QueryEleRequest(
+                        aid = campusId,
+                        room = QueryEleRequest.Room(roomid = roomId, room = roomId),
+                        floor = QueryEleRequest.Floor(floorid = "", floor = ""),
+                        area = QueryEleRequest.Area(area = campusName, areaname = campusName),
+                        building = QueryEleRequest.Building(buildingid = buildingId, building = "")
+                    )
+                )
+                val jsonDataString = json.toJson(requestObj)
+                val response = repository.getElectricity(jsonDataString)
+                if (response.contains("无法获取房间信息")){
+                    null
+                }
+                Log.d(TAG,response)
+                extractElectricityFromString(response)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "queryElectricity failed", e)
+            null
+        }
     }
 
     fun extractElectricityFromString(text: String?): Double? {
