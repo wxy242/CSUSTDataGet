@@ -21,6 +21,8 @@ interface SSOAuthApi {
         @Query("service") service: String = "https://ehall.csust.edu.cn/login"
     ): Response<String>
 
+    @GET("/authserver/login?service=http%3A%2F%2Fxk.csust.edu.cn%2Fsso.jsp")
+    suspend fun loginToEducation(): Response<String>
     @FormUrlEncoded
     @POST("/authserver/login")
     suspend fun login(

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许明文HTTP流量 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- MOOC系统 -->
+        <domain includeSubdomains="true">pt.csust.edu.cn</domain>
+
+        <!-- SSO认证服务 -->
+        <domain includeSubdomains="true">authserver.csust.edu.cn</domain>
+
+        <!-- 信息门户 -->
+        <domain includeSubdomains="true">ehall.csust.edu.cn</domain>
+
+        <!-- 教务系统 -->
+        <domain includeSubdomains="true">xk.csust.edu.cn</domain>
+
+        <!-- 校园卡系统 -->
+        <domain includeSubdomains="true">yktwd.csust.edu.cn</domain>
+    </domain-config>
+</network-security-config>
