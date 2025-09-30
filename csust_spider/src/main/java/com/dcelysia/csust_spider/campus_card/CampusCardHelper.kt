@@ -116,11 +116,15 @@ object CampusCardHelper {
                 )
                 val jsonDataString = json.toJson(requestObj)
                 val response = repository.getElectricity(jsonDataString)
+                Log.d(TAG,response)
                 if (response.contains("无法获取房间信息")){
                     null
                 }
-                Log.d(TAG,response)
-                extractElectricityFromString(response)
+                else{
+                    extractElectricityFromString(response)
+                }
+
+
             }
         } catch (e: Exception) {
             Log.e(TAG, "queryElectricity failed", e)
