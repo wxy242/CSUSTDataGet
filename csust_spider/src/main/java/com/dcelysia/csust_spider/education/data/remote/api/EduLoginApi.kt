@@ -12,14 +12,15 @@ interface EduLoginApi {
     @GET("/jsxsd/framework/xsMain.jsp")
     suspend fun checkLoginStates(): Response<String>
 
-
-    @FormUrlEncoded
-    @POST("/Logon.do?method=logon")
-    suspend fun Login(
-        @Field("username")username: String,
-        @Field("password")password:String,
-        @Field("encoded")encoded: String
-    ): Response<String>
+    @GET("/sso.jsp")
+    suspend fun login(): Response<String>
+//    @FormUrlEncoded
+//    @POST("/Logon.do?method=logon")
+//    suspend fun Login(
+//        @Field("userAccount")username: String,
+//        @Field("userPassword")password:String,
+//        @Field("RANDOMCODE")encoded: String
+//    ): Response<String>
 
     @GET("/jsxsd/xk/LoginToXk?method=exit ")
     suspend fun loginout(
