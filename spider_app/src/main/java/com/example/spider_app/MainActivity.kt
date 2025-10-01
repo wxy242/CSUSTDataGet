@@ -12,6 +12,7 @@ import com.dcelysia.csust_spider.education.data.remote.EducationHelper
 import com.dcelysia.csust_spider.education.data.remote.services.AuthService
 import com.dcelysia.csust_spider.education.data.remote.services.EduCourseService
 import com.dcelysia.csust_spider.mooc.data.remote.repository.MoocRepository
+import com.example.csustdataget.CampusCard.CampusCardHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
@@ -28,23 +29,20 @@ class MainActivity : AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.loginButton)
         loginButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-//                try {
-//                    AuthService.Login("202408130230", "@Wsl20060606")
-//                } catch (e: Exception) {
-//                    Log.d(TAG, e.toString())
-//                }
-                val loginResult = MoocRepository.instance.login("202408130230","@Wsl20060606")
+                try {
+                    val loginResult = MoocRepository.instance.login("202408130230","@Wsl20060606")
                     .filter { it !is Resource.Loading }
                     .first()
-                Log.d(TAG,(loginResult is Resource.Success).toString())
-                val eduSuccess = AuthService.Login("202408130230","@Wsl20060606")
-                Log.d(TAG,"eduSuccess:${eduSuccess}")
-                val course = EducationHelper.getCourseScheduleByTerm("","2025-2026-1")
-                Log.d(TAG,"course:${course}")
-                val moocLoginUser = MoocRepository.instance.getLoginUser()
-                    .filter { it !is Resource.Loading }
-                    .first()
-                Log.d(TAG,(moocLoginUser is Resource.Success).toString())
+                    val sso_result = AuthService.Login("202408130230", "@Wsl20060606")
+
+                    if (sso_result&&(loginResult is Resource.Success)){
+                        val course = EducationHelper.getCourseScheduleByTerm("","2025-2026-1")
+                        Log.d(TAG,"course:${course}")
+                    }
+                } catch (e: Exception) {
+                    Log.d(TAG, e.toString())
+                }
+
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
