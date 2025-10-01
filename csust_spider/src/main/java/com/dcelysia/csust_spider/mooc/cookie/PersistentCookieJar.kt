@@ -16,55 +16,53 @@ import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.map
+import kotlin.compareTo
 
 
 class PersistentCookieJar : CookieJar {
-    private val mmkv by lazy { MMKV.mmkvWithID(TAG)}
+    private val mmkv by lazy { MMKV.mmkvWithID(TAG) }
     private val gson = Gson()
 
-    //内存缓存
-    private val memoryCache = ConcurrentHashMap<String, MutableList<Cookie>>()
+    // 内存缓存：存不可变 List，合并时整体替换，避免并发修改
+    private val memoryCache = ConcurrentHashMap<String, List<Cookie>>()
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    //使用线程安全的map
     private val pendingJobs = ConcurrentHashMap<String, Job>()
     private val saveDelayMs = 500L
     private val TAG = "PersistentCookieJar"
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-        //从mmkv读取该 host 已有的 cookie
         val host = url.host
         Log.d(TAG, "saveFromResponse: Saving cookies for host: $host")
+        val now = System.currentTimeMillis()
 
-        //mmkv加载到内存
-        val list = memoryCache.computeIfAbsent(host) {
-            val json = mmkv.decodeString(host)
-            Log.d(TAG, "saveFromResponse: Reading from MMKV for host: $host, json: $json")
-            if (json != null) {
-                val serializableCookies: List<SerializableCookie> = gson
-                    .fromJson(json, object : TypeToken<List<SerializableCookie>>() {}.type)
-                val cookies = serializableCookies.map { it.toOkHttpCookie() }.toMutableList()
-                Log.d(
-                    TAG,
-                    "saveFromResponse: Loaded ${cookies.size} cookies from MMKV for host: $host"
-                )
-                cookies
-            } else {
-                Log.d(TAG, "saveFromResponse: No cookies found in MMKV for host: $host")
-                mutableListOf()
+        // 原子地合并并替换列表，避免并发修改同一实例
+        memoryCache.compute(host) { _, existing ->
+            // 基于现有有效 cookie 构建初始列表
+            val base = existing?.filter { it.expiresAt > now }?.toMutableList()
+                ?: run {
+                    val json = mmkv.decodeString(host)
+                    if (json != null) {
+                        val type = object : TypeToken<List<SerializableCookie>>() {}.type
+                        val serializableCookies: List<SerializableCookie> = gson.fromJson(json, type)
+                        serializableCookies.map { it.toOkHttpCookie() }.filter { it.expiresAt > now }.toMutableList()
+                    } else {
+                        mutableListOf()
+                    }
+                }
+
+            // 合并新的 cookies（按 name+domain+path 覆盖）
+            cookies.forEach { newCookie ->
+                base.removeAll { it.name == newCookie.name && it.domain == newCookie.domain && it.path == newCookie.path }
+                if (newCookie.expiresAt > now) {
+                    base.add(newCookie)
+                }
             }
+
+            // 返回不可变列表作为新的 map 值
+            base.filter { it.expiresAt > now }
         }
-        //合并
-        cookies.forEach { newCookie ->
-            list.removeAll {
-                it.name == newCookie.name && it.domain == newCookie.domain && it.path == newCookie.path
-            }
-            if (newCookie.expiresAt > System.currentTimeMillis())
-                list.add(newCookie)
-        }
-        //过滤过期cookie
-        val validList = list.filter { it.expiresAt > System.currentTimeMillis() }.toMutableList()
-        memoryCache[host] = validList
+
         jobSave(host)
     }
 
@@ -72,24 +70,19 @@ class PersistentCookieJar : CookieJar {
         val host = url.host
         Log.d(TAG, "loadForRequest: Loading cookies for host: $host")
         val now = System.currentTimeMillis()
+
         val list = memoryCache.computeIfAbsent(host) {
             val json = mmkv.decodeString(host)
             Log.d(TAG, "loadForRequest: Reading from MMKV for host: $host, json: $json")
             if (json != null) {
                 val type = object : TypeToken<List<SerializableCookie>>() {}.type
                 val serializableCookies: List<SerializableCookie> = gson.fromJson(json, type)
-                val cookies = serializableCookies.map { it.toOkHttpCookie() }.toMutableList()
-                Log.d(
-                    TAG,
-                    "loadForRequest: Loaded ${cookies.size} cookies from MMKV for host: $host"
-                )
-                cookies
+                serializableCookies.map { it.toOkHttpCookie() }
             } else {
-                Log.d(TAG, "loadForRequest: No cookies found in MMKV for host: $host")
                 mutableListOf()
             }
         }
-        //过滤过期cookie
+
         val validList = list.filter { it.expiresAt > now }
         Log.d(TAG, "loadForRequest: Returning ${validList.size} valid cookies for host: $host")
         return validList
@@ -132,7 +125,6 @@ class PersistentCookieJar : CookieJar {
 
     fun clear() {
         Log.d(TAG, "clear: Clearing all cookies and cancelling jobs")
-        // 取消所有协程任务
         pendingJobs.values.forEach { it.cancel() }
         pendingJobs.clear()
         scope.cancel()
