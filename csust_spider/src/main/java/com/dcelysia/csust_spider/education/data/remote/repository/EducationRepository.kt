@@ -7,10 +7,12 @@ import com.dcelysia.csust_spider.education.data.remote.api.CourseScheduleApi
 import com.dcelysia.csust_spider.education.data.remote.error.EduHelperError
 import com.dcelysia.csust_spider.education.data.remote.model.Course
 import com.dcelysia.csust_spider.education.data.remote.model.CourseGrade
+import com.dcelysia.csust_spider.education.data.remote.model.CourseGradeResponse
 import com.dcelysia.csust_spider.education.data.remote.model.CourseNature
 import com.dcelysia.csust_spider.education.data.remote.model.DisplayMode
 import com.dcelysia.csust_spider.education.data.remote.model.GradeComponent
 import com.dcelysia.csust_spider.education.data.remote.model.GradeDetail
+import com.dcelysia.csust_spider.education.data.remote.model.GradeDetailResponse
 import com.dcelysia.csust_spider.education.data.remote.model.StudyMode
 import com.dcelysia.csust_spider.education.data.remote.services.AuthService
 import org.jsoup.Jsoup
@@ -142,7 +144,7 @@ class EducationRepository private constructor() {
         courseName: String = "",
         displayMode: DisplayMode = DisplayMode.BEST_GRADE,
         studyMode: StudyMode = StudyMode.MAJOR
-    ): List<CourseGrade> {
+    ): CourseGradeResponse {
 
         AuthService.CheckLoginStates()
 
@@ -155,11 +157,28 @@ class EducationRepository private constructor() {
         )
 
         if (!response.isSuccessful) {
-            throw EduHelperError.CourseGradesRetrievalFailed("网络请求失败：${response.code()}")
+            return CourseGradeResponse(
+                response.code().toString(),
+                "网络请求失败：${response.message()}",
+                null
+            )
         }
 
-        val html = response.body() ?: throw EduHelperError.CourseGradesRetrievalFailed("响应体为空")
-        return parseCourseGrades(html)
+        val html = response.body()
+        if (html.isNullOrBlank()) {
+            return CourseGradeResponse(
+                code = "-1",
+                msg = "响应体为空",
+                data = null
+            )
+        }
+
+        return try {
+            val grades = parseCourseGrades(html)
+            CourseGradeResponse("200", "成功", grades)
+        } catch (e: Exception) {
+            CourseGradeResponse("-2", "解析失败: ${e.message}", null)
+        }
     }
 
     private fun parseCourseGrades(html: String): List<CourseGrade> {
@@ -279,18 +298,35 @@ class EducationRepository private constructor() {
     * - Throws: `EduHelperError`
     * - Returns: 成绩详情
     */
-    suspend fun getGradeDetail(url: String): GradeDetail {
+    suspend fun getGradeDetail(url: String): GradeDetailResponse {
 
         AuthService.CheckLoginStates()
 
         val response = courseGradeApi.getGradeDetail(url)
 
         if (!response.isSuccessful) {
-            throw EduHelperError.GradeDetailRetrievalFailed("网络请求失败：${response.code()}")
+            return GradeDetailResponse(
+                response.code().toString(),
+                "网络请求失败：${response.message()}",
+                null
+            )
         }
 
-        val html = response.body() ?: throw EduHelperError.GradeDetailRetrievalFailed("响应体为空")
-        return parseGradeDetail(html)
+        val html = response.body()
+        if (html.isNullOrBlank()) {
+            return GradeDetailResponse(
+                code = "-1",
+                msg = "响应体为空",
+                data = null
+            )
+        }
+
+        return try {
+            val gradeDetail = parseGradeDetail(html)
+            GradeDetailResponse("200","成功",gradeDetail)
+        } catch (e: Exception) {
+            GradeDetailResponse("-2","解析失败：${e.message}",null)
+        }
     }
 
     private fun parseGradeDetail(html: String): GradeDetail {

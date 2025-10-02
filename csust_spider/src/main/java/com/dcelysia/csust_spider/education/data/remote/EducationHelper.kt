@@ -6,9 +6,11 @@ import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.CourseScheduleApi
 import com.dcelysia.csust_spider.education.data.remote.model.Course
 import com.dcelysia.csust_spider.education.data.remote.model.CourseGrade
+import com.dcelysia.csust_spider.education.data.remote.model.CourseGradeResponse
 import com.dcelysia.csust_spider.education.data.remote.model.CourseNature
 import com.dcelysia.csust_spider.education.data.remote.model.DisplayMode
 import com.dcelysia.csust_spider.education.data.remote.model.GradeDetail
+import com.dcelysia.csust_spider.education.data.remote.model.GradeDetailResponse
 import com.dcelysia.csust_spider.education.data.remote.model.StudyMode
 import com.dcelysia.csust_spider.education.data.remote.repository.EducationRepository
 import retrofit2.HttpException
@@ -62,12 +64,12 @@ object EducationHelper {
         courseName: String = "",
         displayMode: DisplayMode = DisplayMode.BEST_GRADE,
         studyMode: StudyMode = StudyMode.MAJOR
-    ): List<CourseGrade> {
+    ): CourseGradeResponse? {
         return try {
             repository.getCourseGrades(academicYearSemester,courseNature,courseName,displayMode,studyMode)
         } catch (e: Exception) {
             Log.d(TAG,e.toString())
-            emptyList()
+            null
         }
     }
 
@@ -87,17 +89,11 @@ object EducationHelper {
     * - Parameter url: 课程详细URL
     * - Returns: 成绩详情
     */
-    suspend fun getGradeDetail(url: String): GradeDetail? {
+    suspend fun getGradeDetail(url: String): GradeDetailResponse? {
         return try {
             repository.getGradeDetail(url)
-        } catch (e: IOException) { // 网络问题
-            Log.e(TAG, "网络错误: ${e.message}", e)
-            null
-        } catch (e: HttpException) { // HTTP 4xx/5xx
-            Log.e(TAG, "服务器返回错误码: ${e.code()}", e)
-            null
-        } catch (e: Exception) { // 其他未知错误
-            Log.e(TAG, "未知错误", e)
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
             null
         }
     }
