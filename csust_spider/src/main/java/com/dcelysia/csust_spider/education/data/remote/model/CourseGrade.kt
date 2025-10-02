@@ -21,3 +21,9 @@ data class CourseGrade(
     val courseNature: CourseNature, //课程性质
     val courseCategory: String //课程类别
 )
+
+data class CourseGradeResponse(
+    val code: String,
+    val msg: String,
+    val data: List<CourseGrade>? = null
+)
