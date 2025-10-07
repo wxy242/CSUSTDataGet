@@ -39,6 +39,9 @@ class MainActivity : AppCompatActivity() {
                         val course = EducationHelper.getCourseScheduleByTerm("","2025-2026-1")
                         Log.d(TAG,"course:${course}")
                     }
+                    else{
+                        Log.d(TAG,"登陆失败")
+                    }
                 } catch (e: Exception) {
                     Log.d(TAG, e.toString())
                 }

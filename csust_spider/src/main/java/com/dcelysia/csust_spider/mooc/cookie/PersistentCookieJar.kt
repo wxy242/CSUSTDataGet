@@ -36,6 +36,10 @@ class PersistentCookieJar : CookieJar {
         Log.d(TAG, "saveFromResponse: Saving cookies for host: $host")
         val now = System.currentTimeMillis()
 
+        // 打印 incoming cookies 详细信息
+        Log.d(TAG, "saveFromResponse: Incoming cookies count=${cookies.size} for host=$host")
+        cookies.forEach { Log.d(TAG, "saveFromResponse: incoming: ${formatCookie(it)}") }
+
         // 原子地合并并替换列表，避免并发修改同一实例
         memoryCache.compute(host) { _, existing ->
             // 基于现有有效 cookie 构建初始列表
@@ -45,8 +49,12 @@ class PersistentCookieJar : CookieJar {
                     if (json != null) {
                         val type = object : TypeToken<List<SerializableCookie>>() {}.type
                         val serializableCookies: List<SerializableCookie> = gson.fromJson(json, type)
-                        serializableCookies.map { it.toOkHttpCookie() }.filter { it.expiresAt > now }.toMutableList()
+                        val loaded = serializableCookies.map { it.toOkHttpCookie() }.filter { it.expiresAt > now }.toMutableList()
+                        Log.d(TAG, "saveFromResponse: Loaded ${loaded.size} cookies from MMKV for host: $host")
+                        loaded.forEach { Log.d(TAG, "saveFromResponse: loaded from MMKV: ${formatCookie(it)}") }
+                        loaded
                     } else {
+                        Log.d(TAG, "saveFromResponse: No cookies found in MMKV for host: $host")
                         mutableListOf()
                     }
                 }
@@ -60,7 +68,10 @@ class PersistentCookieJar : CookieJar {
             }
 
             // 返回不可变列表作为新的 map 值
-            base.filter { it.expiresAt > now }
+            val result = base.filter { it.expiresAt > now }
+            Log.d(TAG, "saveFromResponse: After merge cookies count=${result.size} for host=$host")
+            result.forEach { Log.d(TAG, "saveFromResponse: merged: ${formatCookie(it)}") }
+            result
         }
 
         jobSave(host)
@@ -77,14 +88,19 @@ class PersistentCookieJar : CookieJar {
             if (json != null) {
                 val type = object : TypeToken<List<SerializableCookie>>() {}.type
                 val serializableCookies: List<SerializableCookie> = gson.fromJson(json, type)
-                serializableCookies.map { it.toOkHttpCookie() }
+                val cookies = serializableCookies.map { it.toOkHttpCookie() }
+                Log.d(TAG, "loadForRequest: Loaded ${cookies.size} cookies from MMKV for host: $host")
+                cookies.forEach { Log.d(TAG, "loadForRequest: loaded: ${formatCookie(it)}") }
+                cookies
             } else {
+                Log.d(TAG, "loadForRequest: No cookies found in MMKV for host: $host")
                 mutableListOf()
             }
         }
 
         val validList = list.filter { it.expiresAt > now }
         Log.d(TAG, "loadForRequest: Returning ${validList.size} valid cookies for host: $host")
+        validList.forEach { Log.d(TAG, "loadForRequest: returning: ${formatCookie(it)}") }
         return validList
     }
 
@@ -119,6 +135,10 @@ class PersistentCookieJar : CookieJar {
             )
         }
         Log.d(TAG, "persistHost: Saving ${toSave.size} valid cookies to MMKV for host: $host")
+        toSave.forEach {
+            val cookie = it.toOkHttpCookie()
+            Log.d(TAG, "persistHost: saving: ${formatCookie(cookie)}")
+        }
         mmkv.encode(host, gson.toJson(toSave))
         pendingJobs.remove(host)
     }
@@ -128,8 +148,16 @@ class PersistentCookieJar : CookieJar {
         pendingJobs.values.forEach { it.cancel() }
         pendingJobs.clear()
         scope.cancel()
+        memoryCache.forEach { (host, list) ->
+            Log.d(TAG, "clear: clearing host=$host, cookies=${list.size}")
+            list.forEach { Log.d(TAG, "clear: clearing cookie: ${formatCookie(it)}") }
+        }
         memoryCache.clear()
         mmkv.clearAll()
         Log.d(TAG, "clear: Cleared MMKV and memory cache")
+    }
+
+    private fun formatCookie(cookie: Cookie): String {
+        return "name=${cookie.name}, value=${cookie.value}, domain=${cookie.domain}, path=${cookie.path}, expiresAt=${cookie.expiresAt}, secure=${cookie.secure}, httpOnly=${cookie.httpOnly}, hostOnly=${cookie.hostOnly}"
     }
 }
