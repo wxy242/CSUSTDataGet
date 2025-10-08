@@ -20,7 +20,7 @@ import kotlin.compareTo
 
 
 class PersistentCookieJar : CookieJar {
-    private val mmkv by lazy { MMKV.defaultMMKV() }
+    private val mmkv by lazy { MMKV.mmkvWithID(TAG) }
     private val gson = Gson()
 
     // 内存缓存：存不可变 List，合并时整体替换，避免并发修改
