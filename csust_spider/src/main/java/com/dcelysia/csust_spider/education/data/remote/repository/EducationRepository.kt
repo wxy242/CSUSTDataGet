@@ -23,6 +23,7 @@ import org.jsoup.nodes.Element
 import java.lang.Exception
 
 class EducationRepository private constructor() {
+    private val TAG = "EducationRepository"
     companion object {
         val instance by lazy { EducationRepository() }
         val TAG = "EducationRepository"
@@ -45,8 +46,9 @@ class EducationRepository private constructor() {
                 return Resource.Error("网络请求失败")
             }
             val htmlBody = response.body().toString()
-            if (response.code() == 200 && htmlBody.contains("登陆失败")){
-                return Resource.Error("请先登录系统")
+            Log.d(Companion.TAG,htmlBody)
+            if (response.code() == 200 && htmlBody.contains("用户登录")){
+                return Resource.Error("需要重新登录")
             }
 
             parseCourseSchedule(htmlBody)
