@@ -2,6 +2,7 @@ package com.dcelysia.csust_spider.education.data.remote
 
 import android.util.Log
 import androidx.core.os.registerForAllProfilingResults
+import com.dcelysia.csust_spider.core.Resource
 import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.CourseScheduleApi
 import com.dcelysia.csust_spider.education.data.remote.model.Course
@@ -27,14 +28,14 @@ object EducationHelper {
      * @param academicSemester The academic semester identifier
      * @return Raw HTML string of the course schedule
      */
-    suspend fun getCourseScheduleByTerm(week: String, academicSemester: String): List<Course> {
+    suspend fun getCourseScheduleByTerm(week: String, academicSemester: String): Resource<List<Course>> {
         return try {
             // For backward compatibility, we still call the API but return the raw response
             // In a real implementation, you might want to store the raw response separately
             getParsedCourseScheduleByTerm(week,academicSemester)
         } catch (e: Exception) {
             Log.d(TAG,e.toString())
-            emptyList()
+            return Resource.Error("发生错误")
         }
     }
     
@@ -45,7 +46,7 @@ object EducationHelper {
      * @param academicSemester The academic semester identifier
      * @return List of Course objects parsed from the course schedule
      */
-    suspend fun getParsedCourseScheduleByTerm(week: String, academicSemester: String): List<Course> {
+    suspend fun getParsedCourseScheduleByTerm(week: String, academicSemester: String): Resource<List<Course>> {
         return repository.getCourseScheduleByTerm(week, academicSemester)
     }
 
