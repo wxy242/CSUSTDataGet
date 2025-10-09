@@ -46,7 +46,7 @@ class EducationRepository private constructor() {
             }
             val htmlBody = response.body().toString()
             if (response.code() == 200 && htmlBody.contains("登陆失败")){
-                return Resource.Error("需要重新登录")
+                return Resource.Error("请先登录系统")
             }
 
             parseCourseSchedule(htmlBody)
