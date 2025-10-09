@@ -1,6 +1,8 @@
 package com.dcelysia.csust_spider.education.data.remote.repository
 
 import android.util.Log
+import android.util.Log.e
+import com.dcelysia.csust_spider.core.Resource
 import com.dcelysia.csust_spider.core.RetrofitUtils
 import com.dcelysia.csust_spider.education.data.remote.api.CourseGradeApi
 import com.dcelysia.csust_spider.education.data.remote.api.CourseScheduleApi
@@ -36,14 +38,21 @@ class EducationRepository private constructor() {
      * @param academicSemester The academic semester identifier
      * @return List of Course objects parsed from the HTML response
      */
-    suspend fun getCourseScheduleByTerm(week: String, academicSemester: String): List<Course> {
+    suspend fun getCourseScheduleByTerm(week: String, academicSemester: String): Resource<List<Course>> {
         return try {
             val response = courseScheduleApi.getCourseSchedule(week, academicSemester)
+            if (!response.isSuccessful){
+                return Resource.Error("网络请求失败")
+            }
             val htmlBody = response.body().toString()
+            if (response.code() == 200 && htmlBody.contains("登陆失败")){
+                return Resource.Error("需要重新登录")
+            }
+
             parseCourseSchedule(htmlBody)
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching course schedule", e)
-            emptyList()
+            Resource.Error("发生错误")
         }
     }
     
@@ -53,7 +62,7 @@ class EducationRepository private constructor() {
      * @param html The HTML response string from the course schedule API
      * @return List of Course objects parsed from the HTML
      */
-    fun parseCourseSchedule(html: String): List<Course> {
+    fun parseCourseSchedule(html: String): Resource<List<Course>> {
         val courses = mutableListOf<Course>()
         
         try {
@@ -63,7 +72,7 @@ class EducationRepository private constructor() {
             val emptyDataElement = document.selectFirst("td[colspan=10]")
             if (emptyDataElement != null && emptyDataElement.text().contains("未查询到数据")) {
                 Log.d(TAG, "未查询到课程数据")
-                return emptyList()
+                return Resource.Error("未查询到课程")
             }
             
             // 查找所有课程内容div
@@ -125,7 +134,7 @@ class EducationRepository private constructor() {
             Log.e(TAG, "Error parsing course schedule HTML", e)
         }
         
-        return courses
+        return Resource.Success(courses)
     }
 
     /* 获取课程成绩
