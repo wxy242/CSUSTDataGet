@@ -1,5 +1,6 @@
 package com.dcelysia.csust_spider.mooc.cookie
 
+import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -19,8 +20,7 @@ import kotlin.collections.map
 import kotlin.compareTo
 
 
-class PersistentCookieJar : CookieJar {
-    private val mmkv by lazy { MMKV.mmkvWithID(TAG) }
+class PersistentCookieJar private constructor(): CookieJar {
     private val gson = Gson()
 
     // 内存缓存：存不可变 List，合并时整体替换，避免并发修改
@@ -29,7 +29,30 @@ class PersistentCookieJar : CookieJar {
 
     private val pendingJobs = ConcurrentHashMap<String, Job>()
     private val saveDelayMs = 500L
-    private val TAG = "PersistentCookieJar"
+    companion object{
+        private val TAG = "PersistentCookieJar"
+        private val MMKV_ID = "csust_cookie_jar"
+        val instance by lazy { PersistentCookieJar() }
+
+        fun initialize(context: Context) {
+            try {
+                MMKV.initialize(context)
+            } catch (t: Throwable) {
+                Log.w(TAG, "MMKV.initialize failed", t)
+            }
+        }
+    }
+
+    private val mmkv by lazy {
+        try {
+            MMKV.mmkvWithID(MMKV_ID, MMKV.MULTI_PROCESS_MODE)
+        } catch (t: Throwable) {
+            Log.w(TAG, "mmkvWithID failed, fallback to default", t)
+            MMKV.defaultMMKV()
+        }
+
+    }
+
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         val host = url.host

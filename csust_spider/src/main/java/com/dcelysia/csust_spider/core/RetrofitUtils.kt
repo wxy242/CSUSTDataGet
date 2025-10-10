@@ -16,14 +16,9 @@ object RetrofitUtils {
     private const val EDUCA_LOGIN_URL ="http://xk.csust.edu.cn"
 
     private const val CAMPUS_CARD_LOCATION = "http://yktwd.csust.edu.cn:8988/"
-    val totalCookieJar by lazy { PersistentCookieJar() }
-//    private val moocCookieJar by lazy { PersistentCookieJar() }
-//    private val eduCookieJar by lazy { PersistentCookieJar() }
-//
-//    private val campusCookieJar by lazy { PersistentCookieJar() }
-    //添加公共请求头 - 用于需要认证的 API
 
-    // MOOC 和 SSO 专用客户端 - 不包含 AuthInterceptor，添加 Cookie 支持
+    val totalCookieJar by lazy { PersistentCookieJar() }
+
     private val moocClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)  // MOOC 系统可能较慢，增加超时时间

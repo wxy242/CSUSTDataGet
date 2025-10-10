@@ -93,7 +93,8 @@ class MoocRepository private constructor() {
         // 2. 检查是否需要验证码
         val needCaptcha = checkNeedCaptcha(username)
         if (needCaptcha) {
-            emit(Resource.Error("账号状态异常，请在手机网页登录一次"))
+            emit(Resource.Error("账号状态异常，请在手机网页登录一次\n网址:" +
+                    "https://authserver.csust.edu.cn/authserver/login?service=https%3A%2F%2Fehall.csust.edu.cn%2Flogin%23%2F"))
             return@flow
         }
         // 3. 加密密码
