@@ -16,7 +16,7 @@ object RetrofitUtils {
     private const val EDUCA_LOGIN_URL ="http://xk.csust.edu.cn"
 
     private const val CAMPUS_CARD_LOCATION = "http://yktwd.csust.edu.cn:8988/"
-    private val totalCookieJar by lazy { PersistentCookieJar() }
+    val totalCookieJar by lazy { PersistentCookieJar() }
 //    private val moocCookieJar by lazy { PersistentCookieJar() }
 //    private val eduCookieJar by lazy { PersistentCookieJar() }
 //
