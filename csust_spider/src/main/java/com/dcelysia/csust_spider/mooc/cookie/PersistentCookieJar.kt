@@ -25,7 +25,7 @@ class PersistentCookieJar private constructor(): CookieJar {
 
     // 内存缓存：存不可变 List，合并时整体替换，避免并发修改
     private val memoryCache = ConcurrentHashMap<String, List<Cookie>>()
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    var scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val pendingJobs = ConcurrentHashMap<String, Job>()
     private val saveDelayMs = 500L
@@ -170,7 +170,6 @@ class PersistentCookieJar private constructor(): CookieJar {
         Log.d(TAG, "clear: Clearing all cookies and cancelling jobs")
         pendingJobs.values.forEach { it.cancel() }
         pendingJobs.clear()
-        scope.cancel()
         memoryCache.forEach { (host, list) ->
             Log.d(TAG, "clear: clearing host=$host, cookies=${list.size}")
             list.forEach { Log.d(TAG, "clear: clearing cookie: ${formatCookie(it)}") }
@@ -178,7 +177,12 @@ class PersistentCookieJar private constructor(): CookieJar {
         memoryCache.clear()
         mmkv.clearAll()
         Log.d(TAG, "clear: Cleared MMKV and memory cache")
+
     }
+    fun destroy() {
+        scope.cancel()
+    }
+
 
     private fun formatCookie(cookie: Cookie): String {
         return "name=${cookie.name}, value=${cookie.value}, domain=${cookie.domain}, path=${cookie.path}, expiresAt=${cookie.expiresAt}, secure=${cookie.secure}, httpOnly=${cookie.httpOnly}, hostOnly=${cookie.hostOnly}"
