@@ -16,7 +16,9 @@ object RetrofitUtils {
     private const val EDUCA_LOGIN_URL ="http://xk.csust.edu.cn"
 
     private const val CAMPUS_CARD_LOCATION = "http://yktwd.csust.edu.cn:8988/"
-    private val totalCookieJar by lazy { PersistentCookieJar.instance }
+
+    val totalCookieJar by lazy { PersistentCookieJar() }
+
     private val moocClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)  // MOOC 系统可能较慢，增加超时时间
