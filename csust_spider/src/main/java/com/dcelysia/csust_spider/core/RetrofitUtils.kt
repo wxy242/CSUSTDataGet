@@ -17,7 +17,7 @@ object RetrofitUtils {
 
     private const val CAMPUS_CARD_LOCATION = "http://yktwd.csust.edu.cn:8988/"
 
-    val totalCookieJar by lazy { PersistentCookieJar() }
+    val totalCookieJar by lazy { PersistentCookieJar.instance }
 
     private val moocClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
