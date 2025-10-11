@@ -1,7 +1,10 @@
 package com.dcelysia.csust_spider.core
 
 
+import com.dcelysia.csust_spider.core.RetrofitUtils.EducationClientForLogin
+import com.dcelysia.csust_spider.core.RetrofitUtils.totalCookieJar
 import com.dcelysia.csust_spider.mooc.cookie.PersistentCookieJar
+import com.tencent.mmkv.MMKV
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -9,7 +12,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitUtils {
-
+    private val MMKV_ID = "csust_cookie_jar"
     private const val MOOC_LOCATION = "http://pt.csust.edu.cn"
     private const val SSO_AUTH_URL = "https://authserver.csust.edu.cn"
     private const val SSO_EHALL_URL = "https://ehall.csust.edu.cn"
@@ -17,7 +20,7 @@ object RetrofitUtils {
 
     private const val CAMPUS_CARD_LOCATION = "http://yktwd.csust.edu.cn:8988/"
 
-    val totalCookieJar by lazy { PersistentCookieJar() }
+    val totalCookieJar by lazy { PersistentCookieJar.instance }
 
     private val moocClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -28,11 +31,21 @@ object RetrofitUtils {
             .cookieJar(totalCookieJar)
             .build()
     }
-     val EducationClient : OkHttpClient by lazy {
+     val EducationClientForLogin : OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor (NetworkLogger.getLoggingInterceptor() )
+            .cookieJar(totalCookieJar)
+            .build()
+    }
+    val EducationClientForService: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor ( NetworkRetryInterceptor(MMKV.mmkvWithID(MMKV_ID),MMKV_ID) )
             .addInterceptor (NetworkLogger.getLoggingInterceptor() )
             .cookieJar(totalCookieJar)
             .build()
@@ -49,25 +62,16 @@ object RetrofitUtils {
     val instanceScoreInquiry : Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
-            .client(EducationClient)
+            .client(EducationClientForService)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    val instanceEmptyClass : Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(EDUCA_LOGIN_URL)
-            .client(EducationClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-    }
-
     val instanceEduLogin: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
-            .client(EducationClient)
+            .client(EducationClientForLogin)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -75,7 +79,7 @@ object RetrofitUtils {
     val instanceEduCourse: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
-            .client(EducationClient)
+            .client(EducationClientForService)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -93,7 +97,7 @@ object RetrofitUtils {
     val instanceExam :Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(EDUCA_LOGIN_URL)
-            .client(EducationClient)
+            .client(EducationClientForService)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -132,8 +136,10 @@ object RetrofitUtils {
                 moocClient.connectionPool.evictAll()
             }
             "EducationClient" ->{
-                EducationClient.connectionPool.evictAll()
-                EducationClient.cache?.evictAll()
+                EducationClientForService.connectionPool.evictAll()
+                EducationClientForService.cache?.evictAll()
+                EducationClientForLogin.connectionPool.evictAll()
+                EducationClientForLogin.cache?.evictAll()
                 totalCookieJar.clear()
             }
 
