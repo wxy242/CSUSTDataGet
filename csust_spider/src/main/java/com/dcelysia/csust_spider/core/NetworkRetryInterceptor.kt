@@ -33,7 +33,8 @@ class NetworkRetryInterceptor(
         val request = chain.request()
         val originalResponse = chain.proceed(request)
         val responseBodyString = originalResponse.body?.string().orEmpty()
-
+        Log.d(TAG,responseBodyString.contains("用户登录").toString())
+        Log.d(TAG, MMKVUtil.hasNonEmptyString(mmkv,key).toString())
         // 判断是否跳转到登录页（cookie 过期）
         if (responseBodyString.contains("用户登录") && MMKVUtil.hasNonEmptyString(mmkv, key)) {
             Log.d(TAG, "检测到登录页面，cookie 可能过期，开始自动登录流程...")
