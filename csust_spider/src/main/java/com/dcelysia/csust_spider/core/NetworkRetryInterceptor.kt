@@ -38,7 +38,7 @@ class NetworkRetryInterceptor(
         Log.d(TAG, MMKVUtil.hasKey(mmkv,key).toString())
         Log.d(TAG, MMKVUtil.hasAnyKey(mmkv).toString())
         // 判断是否跳转到登录页（cookie 过期）
-        if (responseBodyString.contains("用户登录") && MMKVUtil.hasNonEmptyString(mmkv, key)) {
+        if (responseBodyString.contains("用户登录") && MMKVUtil.hasAnyKey(mmkv)) {
             Log.d(TAG, "检测到登录页面，cookie 可能过期，开始自动登录流程...")
 
             // 阻塞登录流程（放在IO线程）
