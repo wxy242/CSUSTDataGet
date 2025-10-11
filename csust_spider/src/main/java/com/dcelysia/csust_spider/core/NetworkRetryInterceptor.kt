@@ -41,6 +41,7 @@ class NetworkRetryInterceptor(
             // 阻塞登录流程（放在IO线程）
             val reloginSuccess = runBlocking(Dispatchers.IO) {
                 try {
+                    Log.d(TAG,"网络库得到的账号密码：${EducationData.studentId},${EducationData.studentPassword}")
                     mmkv.clearAll()
                     val ssoResult = MoocRepository.instance
                         .login(EducationData.studentId, EducationData.studentPassword)
